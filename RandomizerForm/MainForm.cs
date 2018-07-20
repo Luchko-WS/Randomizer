@@ -1,132 +1,88 @@
 ﻿using System;
 using System.Collections;
-using System.IO;
 using System.Windows.Forms;
-using Randomizer;
 
-namespace CSRandom
+namespace Randomizer
 {
-    /*
-     * NOTES: 
-     * Cancel button doesn't work.
-     * Implement status header with current file.
-     * Review openning and closing file logic.
-     * Review opening and closing second window logic.
-     */
-
     public partial class MainForm : Form
     {
-        bool _fileChanged = false;
-        bool _fileOpened = false;
-        uint _window = 1;
-        string _currentFileName = "";
+        bool _listChanged = false;
+        FileManager _fileManager;
 
         public MainForm()
         {
             InitializeComponent();
-            this.chooseItemButton.Click += chooseItemButton_Click;
-            this.shellListButton.Click += shellListButton_Click;
-            this.openFileToolStripMenuItem.Click += openFileToolStripMenuItem_Click;
-            this.itemsListBox.KeyDown += listBox_KeyDown;
+            _fileManager = new FileManager();
+            _fileManager.CurrentFileChanged += _fileManager_CurrentFileChanged;
+            _fileManager.FileOpened += _fileManager_FileOpened;
+            _fileManager.FileClosed += _fileManager_FileClosed;
+
+            this.chooseItemButton.Click += ChooseItemButton_Click;
+            this.shellListButton.Click += ShellListButton_Click;
+            this.openFileToolStripMenuItem.Click += OpenFileToolStripMenuItem_Click;
+            this.itemsListBox.KeyDown += ListBox_KeyDown;
             this.FormClosing += MainForm_FormClosing;
-            this.createNewListToolStripMenuItem.Click += createNewListToolStripMenuItem_Click;
-            this.editListToolStripMenuItem.Click += editListToolStripMenuItem_Click;
-            this.saveListToolStripMenuItem.Click += saveListToolStripMenuItem_Click;
-            this.saveListAsToolStripMenuItem.Click += saveListAsStripMenuItem_Click;
+            this.createNewListToolStripMenuItem.Click += CreateNewListToolStripMenuItem_Click;
+            this.editListToolStripMenuItem.Click += EditListToolStripMenuItem_Click;
+            this.saveListToolStripMenuItem.Click += SaveListToolStripMenuItem_Click;
+            this.saveListAsToolStripMenuItem.Click += SaveListAsStripMenuItem_Click;
+        }
+
+        private void _fileManager_CurrentFileChanged(string newFilename)
+        {
+            currentFileNaemToolStripStatusLabel.Text = newFilename;
+        }
+
+        private void _fileManager_FileOpened(string filename)
+        {
+            currentFileNaemToolStripStatusLabel.Text = filename;
+            this.editListToolStripMenuItem.Enabled = true;
+            this.saveListToolStripMenuItem.Enabled = true;
+            this.saveListAsToolStripMenuItem.Enabled = true;
+        }
+
+        private void _fileManager_FileClosed(string filename)
+        {
+            currentFileNaemToolStripStatusLabel.Text = filename;
+            this.saveListToolStripMenuItem.Enabled = false;
+            this.saveListAsToolStripMenuItem.Enabled = false;
+            this.editListToolStripMenuItem.Enabled = false;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_fileChanged && _fileOpened)
-            {
-                AskAboutSavingChangesInFile();
-            }
-            else if (_fileChanged)
-            {
-                AskAboutCreatingNewFile();
-            }
+            e.Cancel = !CloseCurrentList();
         }
 
-        private void chooseItemButton_Click(object sender, EventArgs e)
+        private void ChooseItemButton_Click(object sender, EventArgs e)
         {
-            switch (_window)
-            {
-                case 1:
-                    var item = ListRandomizer.SelectObjectFromList(itemsListBox.Items);
-                    if (item != null)
-                    {
-                        MessageBox.Show(item.ToString());
-                    }
-                    break;
-                case 2:
-                    _fileChanged = true;
-                    itemsListBox.Items.Clear();
-
-                    foreach (var stringLine in richTextBox.Lines)
-                    {
-                        if (stringLine.Trim() != "")
-                        {
-                            itemsListBox.Items.Add(stringLine.Trim());
-                        }
-                    }
-                    CloseSecondWindow();
-                    break;
-            }
+            var item = ListRandomizer.SelectObjectFromList(itemsListBox.Items);
+            if (item != null) MessageBox.Show(item.ToString());
         }
 
-        private void shellListButton_Click(object sender, EventArgs e)
+        private void ShellListButton_Click(object sender, EventArgs e)
         {
-            switch (_window)
-            {
-                case 1:
-                    var resList = ListRandomizer.ShellList(itemsListBox.Items);
-                    if (resList != null)
-                    {
-                        itemsListBox.Items.Clear();
-                        foreach (var item in resList)
-                        {
-                            itemsListBox.Items.Add(item);
-                        }
-                    }
-                    break;
-                case 2:
-                    CloseSecondWindow();
-                    break;
-            }
+            ListRandomizer.ShellList(itemsListBox.Items);
+            _listChanged = true;
         }
 
-        private void openFileToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OpenFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_fileOpened && _fileChanged)
-            {
-                AskAboutSavingChangesInFile();
-            }
-            else if (_fileChanged)
-            {
-                openFileDialog.FileName = "";
-                AskAboutCreatingNewFile();
-            }
+            if (!CloseCurrentList()) return;
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            var res = _fileManager.ReadListFromFileByDialog();
+            if(res.IsSuccess && !res.IsCancelled)
             {
-                _currentFileName = openFileDialog.FileName;
-                var sr = new StreamReader(openFileDialog.FileName);
                 itemsListBox.Items.Clear();
-
-                while (!sr.EndOfStream)
+                foreach (var item in res.Data)
                 {
-                    itemsListBox.Items.Add(sr.ReadLine());
+                    itemsListBox.Items.Add(item);
                 }
-
-                _fileOpened = true;
-                _fileChanged = false;
-                this.saveListToolStripMenuItem.Enabled = true;
-                this.editListToolStripMenuItem.Enabled = true;
-                sr.Close();
+                _listChanged = false;
             }
         }
 
-        private void listBox_KeyDown(object sender, KeyEventArgs e)
+        private void ListBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (itemsListBox.SelectedIndex != -1)
             {
@@ -136,89 +92,112 @@ namespace CSRandom
                         for (int i = itemsListBox.SelectedItems.Count - 1; i >= 0; i--)
                         {
                             itemsListBox.Items.RemoveAt(itemsListBox.SelectedIndices[i]);
-                            if (_fileOpened)
-                            {
-                                _fileChanged = true;
-                            }
+                            _listChanged = true;
                         }
                         break;
                 }
             }
         }
 
-        private void createNewListToolStripMenuItem_Click(object sender, EventArgs e)
+        private void CreateNewListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_fileOpened && _fileChanged)
+            if (!CloseCurrentList()) return;
+            OpenEditListWindow();
+        }
+
+        private void OpenEditListWindow(IList list = null)
+        {
+            var editListWindow = new EditListForm();
+            if (list != null)
             {
-                AskAboutSavingChangesInFile();
+                editListWindow.SetSource(list);
             }
-            _currentFileName = "";
-            _fileOpened = false;
 
-            OpenSecondWindow();
-            richTextBox.Clear();
-        }
-
-        private void CloseSecondWindow()
-        {
-            _window = 1;
-            fileToolStripMenuItem.Enabled = true;
-            richTextBox.Clear();
-            richTextBox.Visible = false;
-            itemsListBox.Visible = true;
-            chooseItemButton.Text = "Визначити";
-            shellListButton.Text = "Випадковий список";
-        }
-
-        private void OpenSecondWindow()
-        {
-            _window = 2;
-            fileToolStripMenuItem.Enabled = false;
-            richTextBox.Visible = true;
-            itemsListBox.Visible = false;
-            chooseItemButton.Text = "Прийняти";
-            shellListButton.Text = "Скасувати";
-        }
-
-        private void editListToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenSecondWindow();
-            richTextBox.Clear();
-
-            foreach (var i in itemsListBox.Items)
+            if (editListWindow.ShowDialog() == DialogResult.OK)
             {
-                richTextBox.AppendText(i.ToString() + '\n');
+                itemsListBox.Items.Clear();
+                foreach (var stringLine in editListWindow.RichTextBoxLines)
+                {
+                    if (stringLine.Trim() != "")
+                    {
+                        itemsListBox.Items.Add(stringLine.Trim());
+                    }
+                }
+
+                if (itemsListBox.Items.Count == 0 && !_fileManager.IsFileOpened)
+                {
+                    this.editListToolStripMenuItem.Enabled = false;
+                    this.saveListToolStripMenuItem.Enabled = false;
+                    this.saveListAsToolStripMenuItem.Enabled = false;
+                }
+                else
+                {
+                    this.editListToolStripMenuItem.Enabled = true;
+                    this.saveListToolStripMenuItem.Enabled = true;
+                    this.saveListAsToolStripMenuItem.Enabled = true;
+                }
+
+                _listChanged = true;
             }
         }
 
-        private void saveListToolStripMenuItem_Click(object sender, EventArgs e)
+        private void EditListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveInCurrentFile(itemsListBox.Items);
+            OpenEditListWindow(itemsListBox.Items);
         }
 
-        private void saveListAsStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveNewUserList(itemsListBox.Items);
+            if (_fileManager.IsFileOpened)
+            {
+                SaveInCurrentFile(itemsListBox.Items);
+            }
+            else
+            {
+                if (!AskAboutCreatingNewFile()) return;
+            }
+            _listChanged = false;
         }
 
-        private void AskAboutCreatingNewFile()
+        private void SaveListAsStripMenuItem_Click(object sender, EventArgs e)
         {
-            var result = MessageBox.Show(this, "Чи бажаєте зберегти даний список у файлі?", "Збереження списку...",
+            if (!SaveListAsNewFile(itemsListBox.Items)) return;
+            _listChanged = false;
+        }
+
+        private bool CloseCurrentList()
+        {
+            if (_listChanged && _fileManager.IsFileOpened)
+            {
+                var res = AskAboutSavingChangesInFile();
+                if (res) _fileManager.CloseCurrentFile();
+                return res;
+            }
+            else if (_listChanged)
+            {
+                var res = AskAboutCreatingNewFile();
+                if (res) _fileManager.CloseCurrentFile();
+                return res;
+            }
+            return true;
+        }
+
+        private bool AskAboutCreatingNewFile()
+        {
+            var result = MessageBox.Show(this, "Чи бажаєте зберегти даний список у новому файлі?", "Збереження списку...",
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
 
             switch (result)
             {
                 case DialogResult.Yes:
-                    saveNewUserList(itemsListBox.Items);
-                    break;
+                    return SaveListAsNewFile(itemsListBox.Items);
                 case DialogResult.No:
-                    break;
-                case DialogResult.Cancel:
-                    break;
+                    return true;
             }
+            return false;
         }
 
-        private void AskAboutSavingChangesInFile()
+        private bool AskAboutSavingChangesInFile()
         {
             var result = MessageBox.Show(this, "Ви бажаєте зберегти зміни в даному файлі?", "Збереження змін...",
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
@@ -226,44 +205,31 @@ namespace CSRandom
             switch (result)
             {
                 case DialogResult.Yes:
-                    saveInCurrentFile(itemsListBox.Items);
-                    break;
+                    return SaveInCurrentFile(itemsListBox.Items);
                 case DialogResult.No:
-                    break;
-                case DialogResult.Cancel:
-                    break;
+                    return true;
             }
+            return false;
         }
 
-        private void saveInCurrentFile(IList items)
+        private bool SaveInCurrentFile(IList items)
         {
-            var sw = new StreamWriter(openFileDialog.FileName);
-            foreach (var i in items)
+            var res = _fileManager.SaveListInCurrentFile(items);
+            if (!res.IsSuccess)
             {
-                sw.WriteLine(i.ToString());
+                MessageBox.Show(res.ErrorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            sw.Close();
-
-            _fileOpened = true;
-            _fileChanged = false;
+            return res.IsSuccess;
         }
 
-        private void saveNewUserList(IList items)
+        private bool SaveListAsNewFile(IList items)
         {
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            var res = _fileManager.SaveListAsNewFileByDialog(items);
+            if (!res.IsSuccess)
             {
-                var sw = new StreamWriter(saveFileDialog.FileName);
-                foreach (var i in items)
-                {
-                    sw.WriteLine(i.ToString());
-                }
-                sw.Close();
-
-                openFileDialog.FileName = saveFileDialog.FileName;
-                _currentFileName = saveFileDialog.FileName;
-                _fileOpened = true;
-                _fileChanged = false;
+                MessageBox.Show(res.ErrorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            return res.IsSuccess && !res.IsCancelled;
         }
     }
 }

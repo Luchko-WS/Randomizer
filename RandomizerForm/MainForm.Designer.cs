@@ -1,4 +1,4 @@
-﻿namespace CSRandom
+﻿namespace Randomizer
 {
     partial class MainForm
     {
@@ -31,64 +31,60 @@
             this.itemsListBox = new System.Windows.Forms.ListBox();
             this.chooseItemButton = new System.Windows.Forms.Button();
             this.shellListButton = new System.Windows.Forms.Button();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createNewListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.richTextBox = new System.Windows.Forms.RichTextBox();
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.editListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveListAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.currentFileNaemToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // listBox1
+            // itemsListBox
             // 
+            this.itemsListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.itemsListBox.FormattingEnabled = true;
-            this.itemsListBox.Location = new System.Drawing.Point(12, 25);
-            this.itemsListBox.Name = "listBox1";
+            this.itemsListBox.ItemHeight = 16;
+            this.itemsListBox.Location = new System.Drawing.Point(7, 26);
+            this.itemsListBox.Name = "itemsListBox";
             this.itemsListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.itemsListBox.Size = new System.Drawing.Size(272, 303);
+            this.itemsListBox.Size = new System.Drawing.Size(328, 404);
             this.itemsListBox.TabIndex = 0;
             // 
-            // Choose
+            // chooseItemButton
             // 
-            this.chooseItemButton.Location = new System.Drawing.Point(12, 335);
-            this.chooseItemButton.Name = "Choose";
+            this.chooseItemButton.Location = new System.Drawing.Point(63, 436);
+            this.chooseItemButton.Name = "chooseItemButton";
             this.chooseItemButton.Size = new System.Drawing.Size(134, 23);
             this.chooseItemButton.TabIndex = 1;
             this.chooseItemButton.Text = "Визначити";
             this.chooseItemButton.UseVisualStyleBackColor = true;
             // 
-            // random_list
+            // shellListButton
             // 
-            this.shellListButton.Location = new System.Drawing.Point(152, 335);
-            this.shellListButton.Name = "random_list";
+            this.shellListButton.Location = new System.Drawing.Point(203, 436);
+            this.shellListButton.Name = "shellListButton";
             this.shellListButton.Size = new System.Drawing.Size(132, 23);
             this.shellListButton.TabIndex = 1;
             this.shellListButton.Text = "Випадковий список";
             this.shellListButton.UseVisualStyleBackColor = true;
             // 
-            // openFileDialog_1
-            // 
-            this.openFileDialog.Filter = "Текстові файли | *.txt";
-            this.openFileDialog.InitialDirectory = "C://";
-            this.openFileDialog.Title = "Відкриття файлу...";
-            // 
-            // menuStrip1
+            // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip.Name = "menuStrip1";
-            this.menuStrip.Size = new System.Drawing.Size(294, 24);
+            this.menuStrip.Name = "menuStrip";
+            this.menuStrip.Size = new System.Drawing.Size(342, 24);
             this.menuStrip.TabIndex = 2;
             this.menuStrip.Text = "menuStrip1";
             // 
-            // файлToolStripMenuItem
+            // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.createNewListToolStripMenuItem,
@@ -97,80 +93,84 @@
             this.openFileToolStripMenuItem,
             this.saveListToolStripMenuItem,
             this.saveListAsToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "файлToolStripMenuItem";
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.fileToolStripMenuItem.Text = "Файл";
             // 
-            // відкритиФайлToolStripMenuItem
+            // createNewListToolStripMenuItem
             // 
-            this.openFileToolStripMenuItem.Name = "відкритиФайлToolStripMenuItem";
-            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.openFileToolStripMenuItem.Text = "Відкрити файл...";
-            // 
-            // створитиНовийСписокToolStripMenuItem
-            // 
-            this.createNewListToolStripMenuItem.Name = "створитиНовийСписокToolStripMenuItem";
-            this.createNewListToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.createNewListToolStripMenuItem.Name = "createNewListToolStripMenuItem";
+            this.createNewListToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.createNewListToolStripMenuItem.Text = "Створити новий список";
             // 
-            // richTextBox1
+            // editListToolStripMenuItem
             // 
-            this.richTextBox.Location = new System.Drawing.Point(12, 25);
-            this.richTextBox.Name = "richTextBox1";
-            this.richTextBox.Size = new System.Drawing.Size(272, 304);
-            this.richTextBox.TabIndex = 3;
-            this.richTextBox.Text = "";
-            this.richTextBox.Visible = false;
-            // 
-            // saveFileDialog1
-            // 
-            this.saveFileDialog.Filter = "Текстові файли | *.txt";
-            this.saveFileDialog.Title = "Збереження файлу...";
-            // 
-            // редагуватиСписокToolStripMenuItem
-            // 
-            this.editListToolStripMenuItem.Name = "редагуватиСписокToolStripMenuItem";
-            this.editListToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
-            this.editListToolStripMenuItem.Text = "Редагувати список";
             this.editListToolStripMenuItem.Enabled = false;
-            // 
-            // зберегтиСписокУФайлToolStripMenuItem
-            // 
-            this.saveListToolStripMenuItem.Name = "зберегтиСписокУФайлToolStripMenuItem";
-            this.saveListToolStripMenuItem.Size = new System.Drawing.Size(273, 22);
-            this.saveListToolStripMenuItem.Text = "Зберегти список у поточний файл...";
-            this.saveListToolStripMenuItem.Enabled = false;
+            this.editListToolStripMenuItem.Name = "editListToolStripMenuItem";
+            this.editListToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.editListToolStripMenuItem.Text = "Редагувати список";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(213, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(202, 6);
             // 
-            // зберегтиСписокЯкToolStripMenuItem
+            // openFileToolStripMenuItem
             // 
-            this.saveListAsToolStripMenuItem.Name = "зберегтиСписокЯкToolStripMenuItem";
-            this.saveListAsToolStripMenuItem.Size = new System.Drawing.Size(273, 22);
+            this.openFileToolStripMenuItem.Name = "openFileToolStripMenuItem";
+            this.openFileToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.openFileToolStripMenuItem.Text = "Відкрити файл...";
+            // 
+            // saveListToolStripMenuItem
+            // 
+            this.saveListToolStripMenuItem.Enabled = false;
+            this.saveListToolStripMenuItem.Name = "saveListToolStripMenuItem";
+            this.saveListToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.saveListToolStripMenuItem.Text = "Зберегти список...";
+            // 
+            // saveListAsToolStripMenuItem
+            // 
+            this.saveListAsToolStripMenuItem.Enabled = false;
+            this.saveListAsToolStripMenuItem.Name = "saveListAsToolStripMenuItem";
+            this.saveListAsToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.saveListAsToolStripMenuItem.Text = "Зберегти список як...";
             // 
-            // Form1
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.currentFileNaemToolStripStatusLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 463);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(342, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // currentFileNaemToolStripStatusLabel
+            // 
+            this.currentFileNaemToolStripStatusLabel.Name = "currentFileNaemToolStripStatusLabel";
+            this.currentFileNaemToolStripStatusLabel.Size = new System.Drawing.Size(0, 17);
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(294, 370);
+            this.ClientSize = new System.Drawing.Size(342, 485);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.shellListButton);
             this.Controls.Add(this.chooseItemButton);
             this.Controls.Add(this.itemsListBox);
             this.Controls.Add(this.menuStrip);
-            this.Controls.Add(this.richTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip;
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Randomizer";
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -181,17 +181,16 @@
         private System.Windows.Forms.ListBox itemsListBox;
         private System.Windows.Forms.Button chooseItemButton;
         private System.Windows.Forms.Button shellListButton;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createNewListToolStripMenuItem;
-        private System.Windows.Forms.RichTextBox richTextBox;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.ToolStripMenuItem editListToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem saveListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveListAsToolStripMenuItem;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel currentFileNaemToolStripStatusLabel;
     }
 }
 
